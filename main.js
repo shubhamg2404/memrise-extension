@@ -37,8 +37,7 @@
       currentLevel = 1;
     }
     localStorage.setItem('currentLevel',currentLevel);
-    console.log(currentLevel)
-    //createAndClickLink(reviewLink.replace("$",currentLevel));
+    createAndClickLink(reviewLink.replace("$",currentLevel));
   }
   function getNumber(key){
     return Number.parseInt(localStorage.getItem(key));
