@@ -1,62 +1,58 @@
 (function(){
 
-  var reviewLink = "https://www.memrise.com/course/121215/barrons-800-essential-word-list-gre/$/garden/classic_review/?source_element=level_details_session&source_screen=level_details";
-  var iterator = 1;
+  const PARENT_URL = "https://www.memrise.com";
+  const HOME_URL = PARENT_URL +"/home";
+
+  var storage = Storage("extension-storage");
+  var currentCourse  = new Course();
+
+  function init(){
+    var courses = $('.course-card-container')
+    var database = storage.retrive();
+    console.log(courses);
+    $.each(courses,function(index,item){
+
+        let link = $(item).find('p a');
+        let id = item.id;
+        let url = PARENT_URL + link.attr('href');
+        let name = link.text();
+        let tempCourse = new Course(id,name,url);
+
+        if(! isCoursePresent(database,tempCourse)){
+          database.push(tempCourse);
+          console.error(database);
+        }
+        else{
+          console.log("course already found")
+        }
+
+    })
+    storage.commit(database);
+  }
+
+  function isCoursePresent(database,other){
+    for(i in database){
+      if(database[i].equals(other)){
+        return true;
+      }
+    }
+    return false;
+  }
+
+
 
   document.onkeydown = function(e){
-
     if(e.shiftKey && e.key=="R"){
-      iterator *= -1;
+      //iterator *= -1;
+      init();
     }
-
-    if(e.key=="F7"){
-      classicReview();
-    }
-    if(e.key=="F9"){
-      console.log('reseting currentlevel')
-      resetCurrentLevel();
-    }
+    // if(e.key=="F7"){
+    //   classicReview();
+    // }
+    // if(e.key=="F9"){
+    //   console.log('reseting currentlevel')
+    //   resetCurrentLevel();
+    // }
   }
 
-
-  function classicReview(){
-    let maxLevel = getNumber("maxLevel");
-    let currentLevel = getNumber("currentLevel");
-    if(isNaN(maxLevel)){
-      maxLevel = 50;
-      localStorage.setItem('maxLevel',maxLevel);
-    }
-    if(isNaN(currentLevel)){
-      currentLevel = maxLevel;
-    }
-    currentLevel+= iterator;
-    if(iterator < 0  && currentLevel<= 0 ){
-      currentLevel = maxLevel;
-    }
-    if(iterator > 0 && currentLevel >= maxLevel){
-      currentLevel = 1;
-    }
-    localStorage.setItem('currentLevel',currentLevel);
-    createAndClickLink(reviewLink.replace("$",currentLevel));
-  }
-  function getNumber(key){
-    return Number.parseInt(localStorage.getItem(key));
-  }
-
-  function resetCurrentLevel(){
-    let maxLevel = getNumber("maxLevel");
-    let currentLevel = getNumber("currentLevel");
-
-    if(iterator < 0)
-      currentLevel = maxLevel;
-    if(iterator > 0)
-      currentLevel = 1;
-    localStorage.setItem('currentLevel',currentLevel);
-  }
-
-  function createAndClickLink(url){
-    let link = document.createElement("a");
-    link.href = url;
-    link.click();
-  }
 }())

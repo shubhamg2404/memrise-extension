@@ -9,7 +9,7 @@
   "content_scripts":[
     {
       "matches":["https://www.memrise.com/*"],
-      "js":["main.js"]
+      "js":["jquery-3.3.1.min.js","course.js","storage.js","main.js"]
     }
   ]
   ,
